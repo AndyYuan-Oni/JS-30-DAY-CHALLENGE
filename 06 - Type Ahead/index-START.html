@@ -15,7 +15,49 @@
     </ul>
   </form>
 <script>
-const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+
+  const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+  const cities = []; // to store the result we get from fetch
+
+  fetch(endpoint) //return promise
+  .then(result => result.json()) // promise value is accesed using then method and its parameter is promise value
+  .then(data => cities.push(...data)) // we ca use let instead :)
+  .catch(err => console.log(err)); // incase of error
+
+  function findMatches(wordToMatch,cities) {
+    return cities.filter(place => {
+        const reg = new RegExp(wordToMatch,'gi');
+        return place.city.match(reg) || place.state.match(reg);
+    });
+  }
+
+  function numberWithCommas(x) {
+       return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  function displayChanges() {
+    //console.log(this.value); // input ko value display garya (search) this refrence to input[search]
+
+    const html = findMatches(this.value,cities).map(place => {
+
+      const reg = new RegExp(this.value,'gi');
+      const cityName = place.city.replace(reg,`<span class='hl'>${this.value}</span>`);
+      const stateName = place.city.replace(reg,`<span class='hl'>${this.value}</span>`);
+
+      return `
+      <li>
+        <span class='name'>${cityName} , ${stateName}</span>
+        <span class='population'>${numberWithCommas(place.population)}</span>
+      </li>`;
+    }).join(' ');
+    suggestion.innerHTML = html;
+  }
+
+  const suggestion = document.querySelector('.suggestions');
+  const searchInput = document.querySelector('.search');
+  searchInput.addEventListener('change',displayChanges); // change in window 
+  searchInput.addEventListener('keyup',displayChanges); // kunai pani key press vaya ma trigger hunxa
+
 
 </script>
 </body>
