@@ -1,19 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Speech Detection</title>
 </head>
+
 <body>
 
   <div class="words" contenteditable>
   </div>
 
-<script>
-  window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  <script>
 
+    window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-</script>
+    const recognition = new SpeechRecognition();
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+
+    let p = document.createElement('p');
+    const words = document.querySelector('.words');
+
+    words.appendChild(p);
+
+    recognition.addEventListener('result', (e) => {
+
+      const transcripts = Array.from(e.results).map(result => result[0]).map(result => result.transcript).join('');
+      console.log(transcripts);
+      p.textContent = transcripts;
+      if (e.results[0].isFinal) {
+        p = document.createElement('p');
+        words.appendChild(p);
+      }
+
+      if (transcripts.includes('name')) {
+        let ans = document.createElement('span');
+        ans.textContent = 'Your name is Arch Kc. Wife of Basanta kc';
+        words.appendChild(ans);
+      }
+
+      if (transcripts.includes('open Facebook')) {
+        window.open('http://fb.com', '_blank');
+      }
+
+    });
+
+    recognition.addEventListener('end', recognition.start);
+    recognition.start();
+
+  </script>
 
 
   <style>
@@ -33,16 +69,20 @@
       margin: 50px auto;
       background: white;
       border-radius: 5px;
-      box-shadow: 10px 10px 0 rgba(0,0,0,0.1);
+      box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.1);
       padding: 1rem 2rem 1rem 5rem;
       background: -webkit-gradient(linear, 0 0, 0 100%, from(#d9eaf3), color-stop(4%, #fff)) 0 4px;
       background-size: 100% 3rem;
       position: relative;
       line-height: 3rem;
     }
-    
+
     p {
       margin: 0 0 3rem;
+    }
+
+    span {
+      color: red;
     }
 
     .words:before {
@@ -58,4 +98,5 @@
   </style>
 
 </body>
+
 </html>
